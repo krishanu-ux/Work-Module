@@ -68,7 +68,72 @@
   .photo img{width:100%; height:100%; object-fit:cover;}
   .photo .cap{position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,.55);
     padding:6px; font-size:.75rem; color:#fff;}
-  .photo.enlarged{transform:scale(1.06); z-index:5;}
+  .photo{
+  transition:transform .25s ease, box-shadow .25s ease;
+}
+
+.photo:hover{
+  transform:scale(1.02);
+  box-shadow:0 15px 40px rgba(0,0,0,.4);
+}
+
+.photo-viewer{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:25px;
+  background:rgba(0,0,0,.92);
+  backdrop-filter:blur(10px);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .3s ease;
+}
+
+.photo-viewer.open{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+
+.viewer-content{
+  position:relative;
+  max-width:95%;
+  max-height:95vh;
+  text-align:center;
+}
+
+.viewer-image{
+  max-width:95vw;
+  max-height:80vh;
+  object-fit:contain;
+  border-radius:18px;
+  box-shadow:0 20px 70px rgba(0,0,0,.6);
+}
+
+.viewer-caption{
+  color:white;
+  margin-top:12px;
+  font-size:1rem;
+}
+
+.viewer-close{
+  position:absolute;
+  top:-15px;
+  right:-15px;
+  width:42px;
+  height:42px;
+  border:none;
+  border-radius:50%;
+  background:var(--accent);
+  color:#2a1030;
+  font-size:25px;
+  cursor:pointer;
+  z-index:2;
+}
 
   /* funny page */
   .joke-box{
@@ -126,7 +191,22 @@
   <p>Welcome to adulthood, gorgeous Lady!" ❤️👀</p>
   <div class="gallery" id="galleryGrid"></div>
 </section>
+<!-- PHOTO VIEWER -->
+<div class="photo-viewer" id="photoViewer">
 
+  <div class="viewer-content">
+
+    <button type="button" class="viewer-close" id="viewerClose">
+      ×
+    </button>
+
+    <img id="viewerImage" class="viewer-image" src="" alt="Memory">
+
+    <div id="viewerCaption" class="viewer-caption"></div>
+
+  </div>
+
+</div>
 <!-- ================= FUNNY ================= -->
 <section id="funny" class="screen">
   <button class="back" onclick="showScreen('hub')">← Back</button>
@@ -174,31 +254,31 @@ const CONFIG = {
   ],
   introMessage: "This little corner of the internet exists for one reason — to make you smile today. Tap around.",
 
-  // Add as many photos as you like. src can be a URL or left blank for a placeholder block.
-  photos: [
-    { src: "E:\Anj 1.jpeg", caption: "Absolute Queen: Khud ka Kapda phn liya kr😂" },
-    { src: "E:\Anj 3.jpeg", caption: "Preety Gurl: yh Complment sch m diya h😇" },
-    { src: "E:\Anj 4.jpeg", caption: "Ek photo Hum sbka: Chor na, vr baar jruri nhi hota h Caption😉" },
-    { src: "E:\Anj 5.jpeg", caption: "Three Models in one frame: Yh line specially tere liye nhi tha 😂" }
-  ],
+ photos: [
+  { src: "pics/Anj 1.jpeg", height: "400px", caption: "Absolute Queen: Khud ka Kapda phn liya kr 😂" },
+  { src: "pics/Anj 2.jpeg", height: "400px", caption: "Another beautiful memory ❤️" },
+  { src: "pics/Anj 3.jpeg", height: "400px", caption: "Pretty Gurl: yh Complement sch m diya h 😇" },
+  { src: "pics/Anj 4.jpeg", height: "400px", caption: "Three Models in one frame 😂❤️" },
+  { src: "pics/Anj 5.jpeg", height: "400px", caption: "Ek photo Hum sbka ❤️" }
+],
 
   jokes: [
     "You're not getting older… you're just increasing your software version. 😂",
-    "Adulting 101: Welcome to adulthood! Your free trial of childhood has expired, and subscription fees apply starting tomorrow.",
-    "Happy 18th! Welcome to adulthood. Ab gussa kam kiya karo, kyunki agar ab tumne apna aapa khoya, toh Crime Patrol wale tumpar episode banayenge, chota sa news segment nahi!⚖🚔",
+    "Adulting 505: Welcome to adulthood! Your free trial of childhood has expired, and subscription fees apply starting tomorrow.",
+    "Happy 18th B'day! Welcome to Struggling life. Ab gussa km kiya kar, q ki agar ab tune apna aapa khoya, toh Crime Patrol wale tere upr episode banayenge, chota sa news segment nahi!⚖🚔",
     "huhh!! ydd rkhna bhn, chahe tu 18 ki ho jaye ya 80 ki, guu khana mt bhulna, wrna Kajal kha legi 🤣"
   ],
 
   blessings: [
     "Praying that the year ahead brings you closer to your dreams and filled with God's love.",
     "Happy birthday to my favorite rival.",
-    " You might not be my biological sister, but you are 100% family to me. Have the best day!",
+    "You might not be my biological sister, but you are 100% family to me. Have the best day!",
     "Happy B'day to the gurl, who is nothing for me if her sister woudn't be my best friend. Huhh!! Crazy"
   ],
 
-  letter: `A letter for you, My Dear Gusse wali Didi,
+  letter: `My Dear Gusse wali Didi,
 
-**Happy Birthday, Sis ❤️**
+<h3>Happy Birthday, Sis ❤️</h3>
 
 Honestly, I don't even know how to start this without making it awkward 😂 because our relationship has always been a little different.
 
@@ -208,9 +288,9 @@ You're actually one of those people who may look simple and carefree from the ou
 
 And you know what?
 
-Sometimes life gives us people in the most unexpected ways. You became my sister because of a very special connection I already had with someone close to you. And honestly, **I'm really grateful that connection somehow brought you into my life too.**
+Sometimes life gives us people in the most unexpected ways. You became my sister because of a very special connection I already had with your sister. And honestly, I'm really grateful that connection somehow brought you into my life too.
 
-So, indirectly, I guess I should thank *that person* for giving me one more person to fight with, annoy, laugh with and call my sister. 😂❤️
+So, indirectly, I guess I should thank *Teri Didi* for giving me one more person to fight with, annoy, laugh with and call my sister. 😂❤️
 
 Maybe you don't know how much you mean to the people who are genuinely close to you, but I hope you always remember that you are loved and appreciated.
 
@@ -221,15 +301,13 @@ But don't worry, I'll still annoy you, fight with you and make fun of you whenev
 
 On a serious note, I'm really happy that somehow our paths crossed and you became a part of my life.
 
-**Happy Birthday, Sis. ❤️🎂**
+<bold>Happy Birthday, Anjali. ❤️🎂</bold>
 
 Keep smiling. Keep being the amazing person you are.
 
 And remember—
 
-**No matter how much we fight, you're still stuck with me. 😂❤️**
-
-Maybe one day you'll realize just how special the person was who indirectly made you my sister. 😉
+No matter how much we fight, you're still stuck with me. 😉
 
 With love,
 Tera Bhaiya ❤️
@@ -269,9 +347,80 @@ function buildGallery(){
     div.innerHTML = p.src
       ? `<img src="${p.src}" alt="${p.caption}"><div class="cap">${p.caption}</div>`
       : `<span>📷 photo ${i+1}</span><div class="cap">${p.caption}</div>`;
-    div.onclick=()=>div.classList.toggle('enlarged');
+    div.onclick=()=>openPhotoViewer(p.src, p.caption);
     grid.appendChild(div);
   });
+  function openPhotoViewer(src, caption){
+  const viewer = document.getElementById('photoViewer');
+  const image = document.getElementById('viewerImage');
+  const captionBox = document.getElementById('viewerCaption');
+
+  image.src = src;
+  image.alt = caption || "Memory";
+  captionBox.textContent = caption || "";
+
+  viewer.classList.add('open');
+
+  document.body.style.overflow = 'hidden';
+}
+
+function closePhotoViewer(){
+  const viewer = document.getElementById('photoViewer');
+
+  viewer.classList.remove('open');
+
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){
+    closePhotoViewer();
+  }
+});
+function openPhotoViewer(src, caption){
+  const viewer = document.getElementById('photoViewer');
+  const image = document.getElementById('viewerImage');
+  const captionBox = document.getElementById('viewerCaption');
+
+  image.src = src;
+  image.alt = caption || "Memory";
+  captionBox.textContent = caption || "";
+
+  viewer.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePhotoViewer(){
+  const viewer = document.getElementById('photoViewer');
+  const image = document.getElementById('viewerImage');
+
+  viewer.classList.remove('open');
+  document.body.style.overflow = '';
+
+  setTimeout(() => {
+    image.src = '';
+  }, 300);
+}
+
+/* CLOSE BUTTON */
+document.getElementById('viewerClose').addEventListener('click', function(event){
+  event.stopPropagation();
+  closePhotoViewer();
+});
+
+/* CLICK OUTSIDE TO CLOSE */
+document.getElementById('photoViewer').addEventListener('click', function(event){
+  if(event.target === this){
+    closePhotoViewer();
+  }
+});
+
+/* ESC KEY */
+document.addEventListener('keydown', function(event){
+  if(event.key === 'Escape'){
+    closePhotoViewer();
+  }
+});
 }
 
 function buildJokes(){
