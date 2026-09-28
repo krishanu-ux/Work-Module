@@ -1,0 +1,2070 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>A Little Space For You 💌</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --purple: #9563a9;
+            --purple-light: #b477c5;
+            --pink: #d889ae;
+            --text: #392b40;
+            --muted: #806d86;
+            --border: #eaddec;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", Arial, sans-serif;
+
+          background:
+    radial-gradient(circle at 15% 15%, rgba(255, 182, 213, 0.75) 0%, transparent 32%),
+    radial-gradient(circle at 85% 20%, rgba(255, 218, 185, 0.65) 0%, transparent 30%),
+    radial-gradient(circle at 20% 85%, rgba(210, 190, 255, 0.65) 0%, transparent 32%),
+    radial-gradient(circle at 90% 85%, rgba(255, 190, 220, 0.55) 0%, transparent 30%),
+    linear-gradient(135deg, #fff1f7, #fff8f2, #f8f1ff);
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 20px;
+
+            color: var(--text);
+
+            overflow-x: hidden;
+            position: relative;
+        }
+
+
+        /* ==========================================
+           FLOATING BACKGROUND
+        ========================================== */
+
+        .background-hearts {
+            position: fixed;
+            inset: 0;
+
+            pointer-events: none;
+
+            overflow: hidden;
+
+            z-index: 0;
+        }
+
+        .heart {
+            position: absolute;
+
+            bottom: -40px;
+
+            opacity: 0;
+
+            animation:
+                floatHeart linear forwards;
+
+            filter: blur(.1px);
+        }
+
+        @keyframes floatHeart {
+
+            0% {
+                transform:
+                    translateY(0)
+                    rotate(0deg)
+                    scale(.7);
+
+                opacity: 0;
+            }
+
+            10% {
+                opacity: .55;
+            }
+
+            85% {
+                opacity: .35;
+            }
+
+            100% {
+                transform:
+                    translateY(-115vh)
+                    rotate(25deg)
+                    scale(1.2);
+
+                opacity: 0;
+            }
+        }
+
+
+        /* ==========================================
+           MAIN CONTAINER
+        ========================================== */
+
+        .container {
+            width: min(680px, 100%);
+
+            position: relative;
+
+            z-index: 2;
+
+            background: rgba(255, 255, 255, 0.72);
+border: 1px solid rgba(255, 255, 255, 0.7);
+
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+
+            border:
+                1px solid rgba(255, 255, 255, .8);
+
+            border-radius: 34px;
+
+            padding: 38px;
+
+            box-shadow:
+    0 25px 70px rgba(190, 110, 160, 0.18),
+    0 8px 30px rgba(255, 170, 200, 0.12);
+            animation: containerEnter .7s ease both;
+        }
+
+        @keyframes containerEnter {
+
+            from {
+                opacity: 0;
+                transform:
+                    translateY(25px)
+                    scale(.97);
+            }
+
+            to {
+                opacity: 1;
+                transform:
+                    translateY(0)
+                    scale(1);
+            }
+        }
+
+
+        /* ==========================================
+           TOP DECORATION
+        ========================================== */
+
+        .top-decoration {
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            margin-bottom: 22px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+
+            border-radius: 50%;
+
+            background: var(--pink);
+
+            box-shadow:
+                0 0 12px rgba(216, 137, 174, .5);
+
+            animation: pulseDot 2s ease-in-out infinite;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: .2s;
+            opacity: .7;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: .4s;
+            opacity: .45;
+        }
+
+        @keyframes pulseDot {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.35);
+            }
+        }
+
+
+        /* ==========================================
+           TEXT
+        ========================================== */
+
+        .small-text {
+            color: #92739e;
+
+            font-size: 14px;
+
+            margin-bottom: 10px;
+
+            letter-spacing: .2px;
+        }
+
+        h1 {
+            font-size: clamp(30px, 6vw, 45px);
+
+            line-height: 1.12;
+
+            margin-bottom: 15px;
+
+            letter-spacing: -1.2px;
+        }
+
+        .description {
+            color: #6d5d72;
+
+            line-height: 1.75;
+
+            margin-bottom: 25px;
+
+            font-size: 15px;
+        }
+
+
+        /* ==========================================
+           INPUTS
+        ========================================== */
+
+        input,
+        textarea {
+
+            width: 100%;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 19px;
+
+            padding: 17px;
+
+            font-family: inherit;
+
+            font-size: 16px;
+
+            outline: none;
+
+            background:
+                rgba(255, 255, 255, .82);
+
+            color: var(--text);
+
+            transition:
+                border-color .25s ease,
+                box-shadow .25s ease,
+                transform .25s ease,
+                background .25s ease;
+        }
+
+        input {
+
+            margin-bottom: 20px;
+
+        }
+
+        input:hover,
+        textarea:hover {
+
+            background:
+                rgba(255, 255, 255, .96);
+
+        }
+
+        input:focus,
+        textarea:focus {
+
+            border-color:
+                var(--purple-light);
+
+            background:
+                rgba(255, 255, 255, .98);
+
+            box-shadow:
+                0 0 0 5px rgba(180, 119, 197, .10),
+                0 10px 25px rgba(95, 61, 110, .06);
+
+            transform:
+                translateY(-1px);
+        }
+
+        textarea {
+
+            min-height: 175px;
+
+            resize: vertical;
+
+            line-height: 1.65;
+
+        }
+
+        textarea::placeholder,
+        input::placeholder {
+
+            color: #b0a1b5;
+
+        }
+
+
+        /* ==========================================
+           BUTTON
+        ========================================== */
+
+        button {
+
+            border: none;
+
+            cursor: pointer;
+
+            padding: 14px 23px;
+
+            border-radius: 16px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #9563a9,
+                    #b477c5
+                );
+
+            color: white;
+
+            font-size: 15px;
+
+            font-weight: 700;
+
+            box-shadow:
+                0 8px 20px rgba(149, 99, 169, .22);
+
+            transition:
+                transform .25s ease,
+                box-shadow .25s ease,
+                opacity .2s ease;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+        button::after {
+
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+            left: -100%;
+
+            width: 60%;
+            height: 100%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255,255,255,.25),
+                    transparent
+                );
+
+            transform: skewX(-20deg);
+
+            transition:
+                left .55s ease;
+        }
+
+        button:hover::after {
+
+            left: 140%;
+
+        }
+
+        button:hover {
+
+            transform:
+                translateY(-3px);
+
+            box-shadow:
+                0 12px 27px rgba(149, 99, 169, .28);
+
+        }
+
+        button:active {
+
+            transform:
+                translateY(-1px)
+                scale(.98);
+
+        }
+
+        button:disabled {
+
+            opacity: .6;
+
+            cursor: not-allowed;
+
+            transform: none;
+
+            box-shadow: none;
+
+        }
+
+
+        /* ==========================================
+           QUESTION TRANSITIONS
+        ========================================== */
+
+        .question-content {
+
+            animation:
+                questionIn .45s cubic-bezier(.2,.8,.2,1) both;
+
+        }
+
+        @keyframes questionIn {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateX(25px)
+                    scale(.98);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateX(0)
+                    scale(1);
+
+            }
+        }
+
+        .question-content.leaving {
+
+            animation:
+                questionOut .25s ease both;
+
+        }
+
+        @keyframes questionOut {
+
+            to {
+
+                opacity: 0;
+
+                transform:
+                    translateX(-20px)
+                    scale(.98);
+
+            }
+        }
+
+
+        /* ==========================================
+           PROGRESS
+        ========================================== */
+
+        .progress-info {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            color: #91769b;
+
+            font-size: 13px;
+
+            margin-bottom: 9px;
+
+            font-weight: 600;
+        }
+
+        .progress-container {
+
+            height: 8px;
+
+            background:
+                rgba(234, 223, 236, .75);
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+            margin-bottom: 32px;
+
+            position: relative;
+
+        }
+
+        .progress-bar {
+
+            height: 100%;
+
+            width: 0%;
+
+            border-radius: 20px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #9c65ad,
+                    #d08bd6,
+                    #e49bb9
+                );
+
+            transition:
+                width .65s cubic-bezier(.2,.8,.2,1);
+
+            position: relative;
+
+        }
+
+        .progress-bar::after {
+
+            content: "";
+
+            position: absolute;
+
+            inset: 0;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255,255,255,.45),
+                    transparent
+                );
+
+            animation:
+                progressShine 2s linear infinite;
+
+        }
+
+        @keyframes progressShine {
+
+            from {
+                transform: translateX(-100%);
+            }
+
+            to {
+                transform: translateX(100%);
+            }
+
+        }
+
+
+        /* ==========================================
+           QUESTION
+        ========================================== */
+
+        .question-number {
+
+            color: #9b6baa;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            margin-bottom: 9px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+        }
+
+        .question-number::before {
+
+            content: "✦";
+
+            font-size: 12px;
+
+            animation:
+                sparkle 1.8s ease-in-out infinite;
+
+        }
+
+        @keyframes sparkle {
+
+            0%,
+            100% {
+                transform:
+                    rotate(0deg)
+                    scale(1);
+            }
+
+            50% {
+                transform:
+                    rotate(20deg)
+                    scale(1.25);
+            }
+
+        }
+
+        .question {
+
+            font-size:
+                clamp(25px, 5vw, 35px);
+
+            line-height: 1.3;
+
+            margin-bottom: 24px;
+
+            letter-spacing: -.7px;
+
+        }
+
+
+        /* ==========================================
+           ANSWER AREA
+        ========================================== */
+
+        .answer-wrapper {
+
+            position: relative;
+
+        }
+
+        .character-count {
+
+            position: absolute;
+
+            right: 13px;
+
+            bottom: 11px;
+
+            color: #aa9aaf;
+
+            font-size: 11px;
+
+            pointer-events: none;
+
+            background:
+                rgba(255,255,255,.75);
+
+            padding: 3px 6px;
+
+            border-radius: 7px;
+
+        }
+
+
+        /* ==========================================
+           BOTTOM
+        ========================================== */
+
+        .bottom {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-end;
+
+            gap: 15px;
+
+            margin-top: 18px;
+
+        }
+
+        .hint {
+
+            font-size: 12px;
+
+            color: #a28fa7;
+
+            max-width: 310px;
+
+            line-height: 1.5;
+
+        }
+
+        .encouragement {
+
+            min-height: 18px;
+
+            font-size: 12px;
+
+            color: #9b6baa;
+
+            margin-top: 6px;
+
+            animation:
+                encouragementIn .35s ease both;
+
+        }
+
+        @keyframes encouragementIn {
+
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .status {
+
+            font-size: 12px;
+
+            color: #9b6baa;
+
+            margin-top: 6px;
+
+        }
+
+        .error {
+
+            color: #c45b79;
+
+        }
+
+
+        /* ==========================================
+           HIDDEN
+        ========================================== */
+
+        .hidden {
+
+            display: none !important;
+
+        }
+
+
+        /* ==========================================
+           COMPLETION
+        ========================================== */
+
+        .complete {
+
+            text-align: center;
+
+            padding: 25px 5px 10px;
+
+            animation:
+                completionIn .7s cubic-bezier(.2,.8,.2,1) both;
+
+        }
+
+        @keyframes completionIn {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    scale(.9)
+                    translateY(15px);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    scale(1)
+                    translateY(0);
+
+            }
+
+        }
+
+        .complete-icon {
+
+            font-size: 70px;
+
+            margin-bottom: 17px;
+
+            display: inline-block;
+
+            animation:
+                heartPop 1s cubic-bezier(.17,.89,.32,1.49) both;
+
+        }
+
+        @keyframes heartPop {
+
+            0% {
+
+                transform:
+                    scale(0)
+                    rotate(-20deg);
+
+            }
+
+            70% {
+
+                transform:
+                    scale(1.2)
+                    rotate(8deg);
+
+            }
+
+            100% {
+
+                transform:
+                    scale(1)
+                    rotate(0);
+
+            }
+
+        }
+
+        .complete h1 {
+
+            margin-bottom: 12px;
+
+        }
+
+        .complete p {
+
+            color: #756678;
+
+            line-height: 1.8;
+
+            font-size: 15px;
+
+        }
+
+        .celebration {
+
+            margin-top: 25px;
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 14px;
+
+            font-size: 22px;
+
+        }
+
+        .celebration span {
+
+            display: inline-block;
+
+            animation:
+                celebrationFloat 2s ease-in-out infinite;
+
+        }
+
+        .celebration span:nth-child(2) {
+            animation-delay: .15s;
+        }
+
+        .celebration span:nth-child(3) {
+            animation-delay: .3s;
+        }
+
+        .celebration span:nth-child(4) {
+            animation-delay: .45s;
+        }
+
+        .celebration span:nth-child(5) {
+            animation-delay: .6s;
+        }
+
+        @keyframes celebrationFloat {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0);
+            }
+
+            50% {
+                transform:
+                    translateY(-9px)
+                    rotate(5deg);
+            }
+
+        }
+
+
+        /* ==========================================
+           NAME SCREEN SPECIAL
+        ========================================== */
+
+        #nameScreen {
+
+            animation:
+                questionIn .6s ease both;
+
+        }
+
+
+        /* ==========================================
+           MOBILE
+        ========================================== */
+
+        @media (max-width: 600px) {
+
+            body {
+
+                padding: 12px;
+
+                align-items: center;
+
+            }
+
+            .container {
+
+                padding: 26px 20px;
+
+                border-radius: 26px;
+
+            }
+
+            .bottom {
+
+                align-items: stretch;
+
+                flex-direction: column;
+
+            }
+
+            .bottom button {
+
+                width: 100%;
+
+            }
+
+            .hint {
+
+                max-width: none;
+
+            }
+
+            .question {
+
+                font-size: 27px;
+
+            }
+
+            textarea {
+
+                min-height: 155px;
+
+            }
+
+        }
+
+
+        /* ==========================================
+           REDUCED MOTION
+        ========================================== */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+
+                animation-duration: .01ms !important;
+
+                animation-iteration-count: 1 !important;
+
+                transition-duration: .01ms !important;
+
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<!-- ==========================================
+     FLOATING HEARTS
+========================================== -->
+
+<div
+    class="background-hearts"
+    id="backgroundHearts">
+</div>
+
+
+<div class="container">
+
+
+    <!-- ==========================================
+         NAME SCREEN
+    =========================================== -->
+
+    <section id="nameScreen">
+
+        <div class="top-decoration">
+
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+
+        </div>
+
+
+        <div class="small-text">
+            A little private space for us cuz we are having communication gap. 💌
+        </div>
+
+
+        <h1>
+            Hey,
+        </h1>
+
+
+        <p class="description">
+            Please don't ignore this, We are having a conversation through this. ❤️
+        </p>
+
+
+        <input
+            type="text"
+            id="nameInput"
+            placeholder="Your name"
+            maxlength="50"
+            autocomplete="off"
+        >
+
+
+        <button
+            id="startButton"
+            onclick="startQuestions()"
+        >
+            Continue →
+        </button>
+
+
+        <div
+            class="status error"
+            id="nameStatus">
+        </div>
+
+    </section>
+
+
+    <!-- ==========================================
+         QUESTION SCREEN
+    =========================================== -->
+
+    <section
+        id="questionScreen"
+        class="hidden"
+    >
+
+        <div class="progress-info">
+
+            <span id="questionCounter">
+                Question 1 of 5
+            </span>
+
+            <span id="percentage">
+                0%
+            </span>
+
+        </div>
+
+
+        <div class="progress-container">
+
+            <div
+                class="progress-bar"
+                id="progressBar">
+            </div>
+
+        </div>
+
+
+        <div
+            id="questionContent"
+            class="question-content"
+        >
+
+            <div class="question-number">
+                A little question for you...
+            </div>
+
+
+            <h1
+                class="question"
+                id="questionText">
+            </h1>
+
+
+            <div class="answer-wrapper">
+
+                <textarea
+                    id="answerBox"
+                    maxlength="3000"
+                    placeholder="Write whatever you want to say…"
+                ></textarea>
+
+
+                <div
+                    class="character-count"
+                    id="characterCount"
+                >
+                    0 / 3000
+                </div>
+
+            </div>
+
+
+            <div class="bottom">
+
+                <div>
+
+                    <div class="hint">
+                        Take your time. I just want to know you better. 💗
+                    </div>
+
+                    <div
+                        class="encouragement"
+                        id="encouragement">
+                    </div>
+
+                    <div
+                        class="status"
+                        id="status">
+                    </div>
+
+                </div>
+
+
+                <button
+                    id="nextButton"
+                    onclick="nextQuestion()"
+                >
+                    Next →
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ==========================================
+         COMPLETE SCREEN
+    =========================================== -->
+
+    <section
+        id="completeScreen"
+        class="hidden complete"
+    >
+
+        <div class="complete-icon">
+            💗
+        </div>
+
+
+        <h1>
+            Thank you.
+        </h1>
+
+
+        <p>
+            Your answers have been saved.
+            <br><br>
+            I will read it carefully, just text me it's done. ❤️
+        </p>
+
+
+        <div class="celebration">
+
+            <span>💗</span>
+            <span>✨</span>
+            <span>🌸</span>
+            <span>✨</span>
+            <span>💗</span>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script>
+
+/* =================================================
+   SUPABASE
+   DO NOT CHANGE
+================================================= */
+
+const SUPABASE_URL =
+    "https://avbtorojlnzmmgtsivta.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_rh1kFdnwbxdmU6ovU7LAEA_LuBc68Q7";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* =================================================
+   QUESTIONS
+================================================= */
+
+const questions = [
+
+    "Q1. How your day going on?",
+
+    "Q2. What made you smile recently?",
+
+    "Q3. What is something you have been thinking about lately?",
+
+    "Q4. Do you miss me these days? If yes, how much? If No, why?",
+
+    "Lets be honest. Just give your answers, what u actually feel about our relationship. Type Okay, if You are ready to answer the questions.",
+
+    "Q5. When we argue or feel distant, what is the best way for us to fix it together ?",  
+
+    "Q6. Do you feel truly happy and fulfilled in this relationship, or do you feel like it's a struggle?",
+
+    "Q7. I love that you are making new friends at your workplace, but I feel disconnected from you. Do you have any idea about it?",
+
+    "Q8. I want to support your new schedule, but I'm feeling a little sidelined/less important. Can we talk about how to make time for each other?",
+
+    "Q9. According to you, How a healthy relationship is looks like? Just let me know your thoughts about it.",
+
+    "Q10. Is there anything or anyone at your new workplace, that has changed the way you view me?",
+
+    "Q11. Do you still feel the same connection with me that you used to, or has it changed? If yes, how?",
+
+    "Q12. Is there anything you want to tell me or hiding from me? If yes, please tell me. I will not judge you.",
+
+    "Q13. If you could say one thing to me right now, what would it be?",
+
+    "Q14. I love You, Lets fix it Gole. U know, this time I feel, I'm Kajal and yor are laxmi. And I hope u know what dose I mean by this."
+
+
+]; 
+
+
+/* =================================================
+   VARIABLES
+================================================= */
+
+let currentQuestion = 0;
+
+let responderName = "";
+
+let sessionId = null;
+
+
+/* =================================================
+   ENCOURAGEMENT MESSAGES
+================================================= */
+
+const encouragementMessages = [
+
+    "There is no wrong answer here 🌸",
+
+    "Just say whatever feels right ✨",
+
+    "I'm listening... 💌",
+
+    "You can be completely honest here 🫶",
+
+    "A little thought is enough 💭",
+
+    "Write it exactly how you feel 💗"
+
+];
+
+
+/* =================================================
+   CREATE SESSION ID
+================================================= */
+
+try {
+
+    sessionId =
+        crypto.randomUUID();
+
+} catch (error) {
+
+    sessionId =
+        Date.now().toString() +
+        "-" +
+        Math.random()
+            .toString(36)
+            .substring(2);
+
+}
+
+
+/* =================================================
+   FLOATING HEARTS
+================================================= */
+
+function createHeart() {
+
+    const container =
+        document.getElementById(
+            "backgroundHearts"
+        );
+
+    if (!container) return;
+
+
+    const heart =
+        document.createElement("span");
+
+    heart.className =
+        "heart";
+
+
+    const symbols = [
+        "♡",
+        "♥",
+        "✦",
+        "·"
+    ];
+
+
+    heart.textContent =
+        symbols[
+            Math.floor(
+                Math.random() *
+                symbols.length
+            )
+        ];
+
+
+    heart.style.left =
+        Math.random() * 100 + "%";
+
+
+    heart.style.fontSize =
+        (10 + Math.random() * 18) + "px";
+
+
+    heart.style.color =
+        Math.random() > .5
+            ? "#d68aaa"
+            : "#b69ac4";
+
+
+    const duration =
+        8 + Math.random() * 7;
+
+
+    heart.style.animationDuration =
+        duration + "s";
+
+
+    container.appendChild(
+        heart
+    );
+
+
+    setTimeout(
+        () => heart.remove(),
+        duration * 1000
+    );
+
+}
+
+
+/*
+   Create hearts slowly so they
+   don't become distracting.
+*/
+
+setInterval(
+    createHeart,
+    1100
+);
+
+
+/* =================================================
+   START QUESTIONS
+================================================= */
+
+function startQuestions() {
+
+    const nameInput =
+        document.getElementById(
+            "nameInput"
+        );
+
+    const nameStatus =
+        document.getElementById(
+            "nameStatus"
+        );
+
+
+    responderName =
+        nameInput.value.trim();
+
+
+    nameStatus.textContent = "";
+
+
+    if (!responderName) {
+
+        nameStatus.textContent =
+            "Please enter your name or nickname 💗";
+
+        nameInput.focus();
+
+        return;
+
+    }
+
+
+    if (questions.length === 0) {
+
+        nameStatus.textContent =
+            "No questions have been added yet.";
+
+        return;
+
+    }
+
+
+    const nameScreen =
+        document.getElementById(
+            "nameScreen"
+        );
+
+    const questionScreen =
+        document.getElementById(
+            "questionScreen"
+        );
+
+
+    nameScreen.classList.add(
+        "hidden"
+    );
+
+
+    questionScreen.classList.remove(
+        "hidden"
+    );
+
+
+    showQuestion();
+
+}
+
+
+/* =================================================
+   SHOW QUESTION
+================================================= */
+
+function showQuestion() {
+
+    const questionText =
+        document.getElementById(
+            "questionText"
+        );
+
+    const counter =
+        document.getElementById(
+            "questionCounter"
+        );
+
+    const percentage =
+        document.getElementById(
+            "percentage"
+        );
+
+    const progress =
+        document.getElementById(
+            "progressBar"
+        );
+
+    const answerBox =
+        document.getElementById(
+            "answerBox"
+        );
+
+    const nextButton =
+        document.getElementById(
+            "nextButton"
+        );
+
+    const questionContent =
+        document.getElementById(
+            "questionContent"
+        );
+
+
+    /*
+       Restart question animation.
+    */
+
+    questionContent.classList.remove(
+        "question-content"
+    );
+
+
+    void questionContent.offsetWidth;
+
+
+    questionContent.classList.add(
+        "question-content"
+    );
+
+
+    questionText.textContent =
+        questions[currentQuestion];
+
+
+    counter.textContent =
+        `Question ${currentQuestion + 1} of ${questions.length}`;
+
+
+    /*
+       Progress represents the
+       current question.
+
+       The final question becomes
+       100% only after it is saved.
+    */
+
+    const percent =
+        Math.round(
+            (currentQuestion /
+                questions.length) *
+            100
+        );
+
+
+    percentage.textContent =
+        `${percent}%`;
+
+
+    progress.style.width =
+        `${percent}%`;
+
+
+    answerBox.value = "";
+
+    answerBox.style.borderColor = "";
+
+
+    document
+        .getElementById("status")
+        .textContent = "";
+
+
+    updateCharacterCount();
+
+
+    /*
+       Random encouragement.
+    */
+
+    const encouragement =
+        document.getElementById(
+            "encouragement"
+        );
+
+
+    encouragement.textContent =
+        encouragementMessages[
+            Math.floor(
+                Math.random() *
+                encouragementMessages.length
+            )
+        ];
+
+
+    if (
+        currentQuestion ===
+        questions.length - 1
+    ) {
+
+        nextButton.textContent =
+            "Submit 💗";
+
+    } else {
+
+        nextButton.textContent =
+            "Next →";
+
+    }
+
+
+    /*
+       Focus the answer box
+       after the question appears.
+    */
+
+    setTimeout(
+        () => answerBox.focus(),
+        350
+    );
+
+}
+
+
+/* =================================================
+   CHARACTER COUNTER
+================================================= */
+
+function updateCharacterCount() {
+
+    const answerBox =
+        document.getElementById(
+            "answerBox"
+        );
+
+    const counter =
+        document.getElementById(
+            "characterCount"
+        );
+
+
+    counter.textContent =
+        `${answerBox.value.length} / 3000`;
+
+}
+
+
+/* =================================================
+   SAVE ANSWER
+   IMPORTANT:
+   This is the working version.
+================================================= */
+
+async function saveAnswer(answer) {
+
+    const status =
+        document.getElementById(
+            "status"
+        );
+
+
+    status.classList.remove(
+        "error"
+    );
+
+
+    status.textContent =
+        "Saving...";
+
+
+    const responseData = {
+
+        session_id:
+            sessionId,
+
+        respondent_name:
+            responderName,
+
+        question_number:
+            currentQuestion + 1,
+
+        question:
+            questions[currentQuestion],
+
+        answer:
+            answer
+
+    };
+
+
+    console.log(
+        "Sending to Supabase:",
+        responseData
+    );
+
+
+    try {
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("responses")
+                .insert([
+                    responseData
+                ]);
+
+
+        console.log(
+            "Supabase result:",
+            error
+        );
+
+
+        if (error) {
+
+            console.error(
+                "SUPABASE ERROR:",
+                error
+            );
+
+
+            status.classList.add(
+                "error"
+            );
+
+
+            status.textContent =
+                error.message ||
+                "Could not save your answer.";
+
+
+            return false;
+
+        }
+
+
+        status.textContent =
+            "Saved ✓";
+
+
+        console.log(
+            "Answer saved successfully."
+        );
+
+
+        return true;
+
+
+    } catch (err) {
+
+        console.error(
+            "REQUEST ERROR:",
+            err
+        );
+
+
+        status.classList.add(
+            "error"
+        );
+
+
+        status.textContent =
+            err.message ||
+            "Something went wrong while saving.";
+
+
+        return false;
+
+    }
+
+}
+
+
+/* =================================================
+   NEXT / SUBMIT
+================================================= */
+
+async function nextQuestion() {
+
+    const answerBox =
+        document.getElementById(
+            "answerBox"
+        );
+
+    const nextButton =
+        document.getElementById(
+            "nextButton"
+        );
+
+
+    const answer =
+        answerBox.value.trim();
+
+
+    answerBox.style.borderColor =
+        "";
+
+
+    if (!answer) {
+
+        answerBox.style.borderColor =
+            "#d77b9d";
+
+
+        answerBox.focus();
+
+
+        document
+            .getElementById(
+                "status"
+            )
+            .textContent =
+            "Please write an answer first 💗";
+
+
+        return;
+
+    }
+
+
+    nextButton.disabled =
+        true;
+
+
+    nextButton.textContent =
+        "Saving...";
+
+
+    /*
+       WAIT FOR SUPABASE.
+    */
+
+    const saved =
+        await saveAnswer(
+            answer
+        );
+
+
+    /*
+       If saving failed,
+       don't move forward.
+    */
+
+    if (!saved) {
+
+        nextButton.disabled =
+            false;
+
+
+        nextButton.textContent =
+            currentQuestion ===
+            questions.length - 1
+                ? "Submit 💗"
+                : "Next →";
+
+
+        return;
+
+    }
+
+
+    /*
+       LAST QUESTION
+    */
+
+    if (
+        currentQuestion >=
+        questions.length - 1
+    ) {
+
+        document
+            .getElementById(
+                "progressBar"
+            )
+            .style.width =
+            "100%";
+
+
+        document
+            .getElementById(
+                "percentage"
+            )
+            .textContent =
+            "100%";
+
+
+        finishQuestions();
+
+
+        return;
+
+    }
+
+
+    /*
+       MOVE TO NEXT QUESTION
+    */
+
+    currentQuestion++;
+
+
+    nextButton.disabled =
+        false;
+
+
+    showQuestion();
+
+}
+
+
+/* =================================================
+   FINISH
+================================================= */
+
+function finishQuestions() {
+
+    const questionScreen =
+        document.getElementById(
+            "questionScreen"
+        );
+
+    const completeScreen =
+        document.getElementById(
+            "completeScreen"
+        );
+
+
+    questionScreen.classList.add(
+        "hidden"
+    );
+
+
+    completeScreen.classList.remove(
+        "hidden"
+    );
+
+
+    /*
+       Little celebration burst.
+    */
+
+    for (
+        let i = 0;
+        i < 12;
+        i++
+    ) {
+
+        setTimeout(
+            createHeart,
+            i * 120
+        );
+
+    }
+
+}
+
+
+/* =================================================
+   ANSWER BOX EVENTS
+================================================= */
+
+document
+    .getElementById(
+        "answerBox"
+    )
+    .addEventListener(
+        "input",
+        updateCharacterCount
+    );
+
+
+/*
+   Ctrl + Enter / Cmd + Enter
+   submits the current answer.
+*/
+
+document
+    .getElementById(
+        "answerBox"
+    )
+    .addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                (event.ctrlKey ||
+                 event.metaKey) &&
+                event.key === "Enter"
+            ) {
+
+                event.preventDefault();
+
+                nextQuestion();
+
+            }
+
+        }
+    );
+
+
+/* =================================================
+   NAME ENTER KEY
+================================================= */
+
+document
+    .getElementById(
+        "nameInput"
+    )
+    .addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key === "Enter"
+            ) {
+
+                event.preventDefault();
+
+                startQuestions();
+
+            }
+
+        }
+    );
+
+
+/* =================================================
+   STARTUP
+================================================= */
+
+for (
+    let i = 0;
+    i < 3;
+    i++
+) {
+
+    setTimeout(
+        createHeart,
+        i * 600
+    );
+
+}
+
+</script>
+
+</body>
+
+</html>
+```
